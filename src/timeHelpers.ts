@@ -34,3 +34,7 @@ export function stringToTime(inputString: string) {
 
   return totalTime;
 }
+
+export function minutesAndSecondsToTime(minutes: number, seconds: number) {
+  return minutesToMilliseconds(minutes) + secondsToMilliseconds(seconds);
+}

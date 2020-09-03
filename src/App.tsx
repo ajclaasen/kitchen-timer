@@ -3,8 +3,7 @@ import './App.css';
 
 import Container from '@material-ui/core/Container';
 
-import PlayPauseButton from './UI/PlayPauseButton';
-import StopButton from './UI/StopButton';
+import KitchenTimer from './UI/KitchenTimer';
 
 function App() {
   return (
@@ -14,8 +13,7 @@ function App() {
       </header>
       <main>
         <Container>
-          <PlayPauseButton playing={false} />
-          <StopButton />
+          <KitchenTimer />
         </Container>
       </main>
     </div>
