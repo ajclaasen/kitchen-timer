@@ -11,20 +11,27 @@ interface Time {
   time?: number;
   minutes?: number;
   seconds?: number;
+  playing?: boolean;
 }
 
 class KitchenTimer extends Component<{}, Time>  {
   constructor(props:Time) {
     super(props);
 
-    this.state = props
+    this.state = {
+      time: props.time,
+      minutes: props.minutes,
+      seconds: props.seconds,
+      playing: props.playing,
+    };
   }
 
   static defaultProps = {
     time: 0,
     minutes: 0,
     seconds: 0,
-  }
+    playing: false,
+  };
 
   handleMinutes = (event: React.ChangeEvent<HTMLInputElement>) => {
     const minutes = Number(event.currentTarget.value);
@@ -48,6 +55,12 @@ class KitchenTimer extends Component<{}, Time>  {
     });
   };
 
+  togglePlaying = () => {
+    this.setState({
+      playing: !this.state.playing,
+    });
+  };
+
   render() {
     return (
       <form autoComplete="off">
@@ -68,7 +81,7 @@ class KitchenTimer extends Component<{}, Time>  {
           onChange={this.handleSeconds}
         />
 
-        <PlayPauseButton />
+        <PlayPauseButton playing={this.state.playing} onClick={this.togglePlaying} />
         <StopButton />
         {this.state.time}
 
