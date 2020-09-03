@@ -4,7 +4,8 @@ import './App.css';
 
 import Container from '@material-ui/core/Container';
 
-import PlayPauseButton from './PlayPauseButton';
+import PlayPauseButton from './UI/PlayPauseButton';
+import StopButton from './UI/StopButton';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <main>
         <Container>
           <PlayPauseButton playing={false} />
+          <StopButton />
         </Container>
       </main>
     </div>
