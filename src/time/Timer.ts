@@ -2,7 +2,7 @@
 interface TimerParams {
   duration: number,
   playing?: boolean,
-  callback: (...args: any[]) => void,
+  onTimeout: (...args: any[]) => void,
 }
 
 class Timer {
@@ -12,7 +12,7 @@ class Timer {
   private _timeElapsed!: number;
   private _playing: boolean;
   private _timeout: number; // The ID of the timeout
-  private _callback: (...args: any[]) => void;
+  private _onTimeout: (...args: any[]) => void;
 
   static defaultProps = {
     playing: false,
@@ -22,7 +22,7 @@ class Timer {
     this.duration = params.duration;
     this._playing = params.playing!;
     this._timeout = -1;
-    this._callback = params.callback;
+    this._onTimeout = params.onTimeout;
 
     this.reset();
   };
@@ -68,7 +68,7 @@ class Timer {
   }
 
   private setTimeout = () => {
-    this._timeout = window.setTimeout(this._callback, this.timeLeft);
+    this._timeout = window.setTimeout(this._onTimeout, this.timeLeft);
   }
 
 

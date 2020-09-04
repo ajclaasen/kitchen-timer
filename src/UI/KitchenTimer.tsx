@@ -10,13 +10,14 @@ import StopButton from './StopButton';
 import { minutesAndSecondsToTime } from '../time/timeHelpers';
 
 interface KitchenTimerProps {
-  duration?: number;
-  playing?: boolean;
+  duration?: number,
+  playing?: boolean,
 }
 
 interface KitchenTimerState {
-  duration?: number;
   playing?: boolean;
+  timerHasStarted: boolean;
+  timer: Timer;
 }
 
 class KitchenTimer extends Component<KitchenTimerProps, KitchenTimerState>  {
@@ -25,8 +26,9 @@ class KitchenTimer extends Component<KitchenTimerProps, KitchenTimerState>  {
     super(props);
 
     this.state = {
-      duration: props.duration,
       playing: props.playing,
+      timerHasStarted: false,
+      timer: new Timer({duration: props.duration!, onTimeout: this.alarm}),
     };
   }
 
@@ -36,13 +38,50 @@ class KitchenTimer extends Component<KitchenTimerProps, KitchenTimerState>  {
   };
 
   togglePlaying = () => {
-    this.setState({
-      playing: !this.state.playing,
-    });
+    const playing = !this.state.playing;
+
+    playing ? this.play() : this.pause()
   };
 
+  play = () => {
+    this.state.timer.start();
+
+    this.setState({
+      playing: true,
+      timerHasStarted: true,
+    });
+  }
+
+  pause = () => {
+    this.state.timer.pause();
+    this.setState({
+      playing: false,
+    });
+    
+    console.log(`Alarm paused with ${this.state.timer.timeLeft} milliseconds left.`);
+  }
+
+  reset = () => {
+    this.setState({
+      playing: false,
+      timerHasStarted: false,
+    });
+    this.state.timer.reset();
+  }
+
+  alarm = () => {
+    this.reset();
+
+    console.log(`Alarm called after ${this.state.timer.duration} milliseconds.`);
+    window.alert("ALARM");
+  }
+
   onInputChange = (milliseconds:number) => {
-    console.log(milliseconds);
+    if(this.state.timerHasStarted) {
+      this.state.timer.setTimeLeft(milliseconds);
+    } else {
+      this.state.timer.duration = milliseconds;
+    }
   }
 
   render() {
@@ -50,7 +89,7 @@ class KitchenTimer extends Component<KitchenTimerProps, KitchenTimerState>  {
       <div>
         <TimeInput inputEnabled={!this.state.playing} onChange={this.onInputChange} />
         <PlayPauseButton playing={this.state.playing} onClick={this.togglePlaying} />
-        <StopButton />
+        <StopButton onClick={this.reset}/>
       </div>
     );
   };
