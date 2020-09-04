@@ -44,3 +44,11 @@ it('calls the passed onChange handler with the correct amount of milliseconds', 
 
   expect(callback).toBeCalledWith(123000);
 });
+
+it('sets the minutes and seconds if a duration is passed', () => {
+  const duration = 126000; // 2 minutes and 6 seconds
+  const { getByLabelText } = render(<TimeInput duration={duration} />);
+
+  expect(getByLabelText('Minutes')).toHaveDisplayValue('2');
+  expect(getByLabelText('Seconds')).toHaveDisplayValue('6');
+});

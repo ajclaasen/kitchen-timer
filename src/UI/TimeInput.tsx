@@ -2,30 +2,59 @@ import React, { Component } from 'react';
 
 import { TextField } from '@material-ui/core';
 
+import { millisecondsToAbsMinutes, millisecondsToAbsSeconds } from '../time/timeHelpers';
+
 interface TimeInputProps {
   onChange?: (arg0:number) => void,
   enabled?: boolean,
+  duration?: number,
 }
 
-class TimeInput extends Component<TimeInputProps> {
-  minutes = 0;
-  seconds = 0;
+interface TimeInputState {
+  minutes: number,
+  seconds: number,
+}
+
+class TimeInput extends Component<TimeInputProps, TimeInputState> {
+
+  constructor(props:TimeInputProps) {
+    super(props);
+
+    this.setMinutesAndSeconds(props.duration!);
+  }
 
   static defaultProps = {
     onChange: () => {},
     enabled: true,
+    duration: 0,
   };
 
-  updateMinutes = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.minutes = Number(event.currentTarget.value);
+  setMinutesAndSeconds = (milliseconds:number) => {
+    let durationLeft = milliseconds;
 
-    this.onChange();
+    const minutes = millisecondsToAbsMinutes(durationLeft);
+    durationLeft -= minutes * 60 * 1000;
+
+    const seconds = millisecondsToAbsSeconds(durationLeft);
+
+    this.state = {
+      minutes: minutes,
+      seconds: seconds,
+    };
+  };
+
+  handleMinutesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState(
+      {minutes: Number(event.currentTarget.value)}, 
+      this.onChange
+    );
   }
 
-  updateSeconds = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.seconds = Number(event.currentTarget.value);
-
-    this.onChange();
+  handleSecondsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState(
+      {seconds: Number(event.currentTarget.value)},
+      this.onChange
+    );
   }
 
   onChange = () => {
@@ -44,7 +73,8 @@ class TimeInput extends Component<TimeInputProps> {
           type="number"
           disabled={!this.props.enabled}
           InputProps={{inputProps: { min:0 }}}
-          onChange={this.updateMinutes}
+          value={this.state.minutes}
+          onChange={this.handleMinutesChange}
         />
 
         <TextField
@@ -53,7 +83,8 @@ class TimeInput extends Component<TimeInputProps> {
           type="number"
           disabled={!this.props.enabled}
           InputProps={{inputProps: { min:0 }}}
-          onChange={this.updateSeconds}
+          value={this.state.seconds}
+          onChange={this.handleSecondsChange}
         />
 
       </form>
