@@ -1,14 +1,13 @@
 
-interface TimerProps {
+interface TimerParams {
   duration: number,
   playing?: boolean,
   callback: (...args: any[]) => void,
 }
 
 class Timer {
-
-  private _props: TimerProps;
   
+  duration: number;
   private _startTime!: number;
   private _timeElapsed!: number;
   private _playing: boolean;
@@ -19,12 +18,11 @@ class Timer {
     playing: false,
   };
 
-  constructor(props:TimerProps) {
-    this._props = props;
-
-    this._playing = props.playing!;
+  constructor(params:TimerParams) {
+    this.duration = params.duration;
+    this._playing = params.playing!;
     this._timeout = -1;
-    this._callback = props.callback;
+    this._callback = params.callback;
 
     this.reset();
   };
@@ -53,11 +51,11 @@ class Timer {
     this._playing = false;
   };
 
-  setTime = (milliseconds:number) => {
+  setTimeLeft = (milliseconds:number) => {
     this.clearTimeout();
 
     this._startTime = Date.now();
-    this._timeElapsed = this._props.duration - milliseconds;
+    this._timeElapsed = this.duration - milliseconds;
 
     if(this._playing) {
       this.setTimeout();
@@ -90,7 +88,7 @@ class Timer {
   }
 
   get timeLeft(): number {
-    return this._props.duration - this.timeElapsed;
+    return this.duration - this.timeElapsed;
   }
 }
 

@@ -114,7 +114,7 @@ it('callback is called after setTime is called, regardless of earlier timeElapse
 
   timer.start();
   advanceTime(500);
-  timer.setTime(750);
+  timer.setTimeLeft(750);
   advanceTime(500);
 
   expect(callback).not.toBeCalled();
