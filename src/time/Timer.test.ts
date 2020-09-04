@@ -104,6 +104,28 @@ it('when the timer is continued after paused, the callback is called after the r
 
 
 
+it('callback is called after setTime is called, regardless of earlier timeElapsed', () => {
+  const callback = jest.fn();
+
+  const timer = new Timer({
+    duration: 1000,
+    callback: callback,
+  });
+
+  timer.start();
+  advanceTime(500);
+  timer.setTime(750);
+  advanceTime(500);
+
+  expect(callback).not.toBeCalled();
+
+  advanceTime(250);
+
+  expect(callback).toBeCalled();
+});
+
+
+
 it('timeLeft returns the duration of the timer after initialization', () => {
   const duration = 1234;
   const timer = new Timer({

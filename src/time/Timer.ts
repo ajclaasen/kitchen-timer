@@ -1,4 +1,3 @@
-import React, { Component } from 'react'
 
 interface TimerProps {
   duration: number,
@@ -6,9 +5,9 @@ interface TimerProps {
   callback: (...args: any[]) => void,
 }
 
-class Timer extends Component {
+class Timer {
 
-  duration: number;
+  private _props: TimerProps;
   
   private _startTime!: number;
   private _timeElapsed!: number;
@@ -21,9 +20,8 @@ class Timer extends Component {
   };
 
   constructor(props:TimerProps) {
-    super(props);
+    this._props = props;
 
-    this.duration = props.duration;
     this._playing = props.playing!;
     this._timeout = -1;
     this._callback = props.callback;
@@ -34,7 +32,7 @@ class Timer extends Component {
 
 
   reset = () => {
-    window.clearTimeout(this._timeout);
+    this.clearTimeout();
   
     this._startTime = Date.now();
     this._timeElapsed = 0;
@@ -45,15 +43,35 @@ class Timer extends Component {
     
     this._playing = true;
 
-    this._timeout = window.setTimeout(this._callback, this.timeLeft);
+    this.setTimeout();
   };
 
   pause = () => {
-    window.clearTimeout(this._timeout);
+    this.clearTimeout();
 
     this._timeElapsed += Date.now() - this._startTime;
     this._playing = false;
   };
+
+  setTime = (milliseconds:number) => {
+    this.clearTimeout();
+
+    this._startTime = Date.now();
+    this._timeElapsed = this._props.duration - milliseconds;
+
+    if(this._playing) {
+      this.setTimeout();
+    }
+  }
+
+
+  private clearTimeout = () => {
+    window.clearTimeout(this._timeout);
+  }
+
+  private setTimeout = () => {
+    this._timeout = window.setTimeout(this._callback, this.timeLeft);
+  }
 
 
 
@@ -63,7 +81,7 @@ class Timer extends Component {
 
   get timeElapsed(): number {
     // _timeElapsed is only updated when the timer is paused.
-    // If the timer is playing, we need to calculate it.
+    // If the timer is playing, we need to calculate the current elapsed time.
     if(this._playing) {
       return this._timeElapsed + Date.now() - this._startTime;
     } else {
@@ -72,7 +90,7 @@ class Timer extends Component {
   }
 
   get timeLeft(): number {
-    return this.duration - this.timeElapsed;
+    return this._props.duration - this.timeElapsed;
   }
 }
 
