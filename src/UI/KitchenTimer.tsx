@@ -69,6 +69,7 @@ class KitchenTimer extends Component<{}, Time>  {
           id="minutes-field"
           label="Minutes"
           type="number"
+          disabled={this.state.playing}
           InputProps={{inputProps: {min:0}}}
           onChange={this.handleMinutes}
         />
@@ -78,6 +79,7 @@ class KitchenTimer extends Component<{}, Time>  {
           label="Seconds"
           type="number"
           InputProps={{inputProps: {min:0}}}
+          disabled={this.state.playing}
           onChange={this.handleSeconds}
         />
 

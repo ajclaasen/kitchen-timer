@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDom from 'react-dom';
 
 import KitchenTimer from './KitchenTimer';
 import { render, fireEvent } from '@testing-library/react';
@@ -26,4 +25,20 @@ it('toggles between playing and paused when the play/pause button is pressed', (
   fireEvent.click(getByLabelText('pause'));
 
   expect(getByLabelText('play')).toBeInTheDocument();
+});
+
+it('the time inputs are enabled by default', () => {
+  const { getByLabelText } = render(<KitchenTimer />);
+
+  expect(getByLabelText('Seconds')).toBeEnabled();
+  expect(getByLabelText('Minutes')).toBeEnabled();
+});
+
+it('the time inputs are disabled when the timer is playing', () => {
+  const { getByLabelText } = render(<KitchenTimer />);
+
+  fireEvent.click(getByLabelText('play'));
+
+  expect(getByLabelText('Seconds')).toBeDisabled();
+  expect(getByLabelText('Minutes')).toBeDisabled();
 });
