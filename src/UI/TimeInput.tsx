@@ -6,7 +6,7 @@ import { millisecondsToAbsMinutes, millisecondsToAbsSeconds } from '../time/time
 
 interface TimeInputProps {
   onChange?: (arg0:number) => void,
-  enabled?: boolean,
+  inputEnabled?: boolean,
   duration?: number,
 }
 
@@ -25,7 +25,7 @@ class TimeInput extends Component<TimeInputProps, TimeInputState> {
 
   static defaultProps = {
     onChange: () => {},
-    enabled: true,
+    inputEnabled: true,
     duration: 0,
   };
 
@@ -44,21 +44,21 @@ class TimeInput extends Component<TimeInputProps, TimeInputState> {
   };
 
   handleMinutesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState(
-      {minutes: Number(event.currentTarget.value)}, 
+    this.setState({minutes: Number(event.currentTarget.value)}, 
       this.onChange
     );
   }
 
   handleSecondsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState(
-      {seconds: Number(event.currentTarget.value)},
+    this.setState({seconds: Number(event.currentTarget.value)},
       this.onChange
     );
   }
 
   onChange = () => {
-    const timeInMilliseconds = (this.minutes * 60 * 1000) + (this.seconds * 1000);
+    const minutesInMilliseconds = this.state.minutes * 60 * 1000;
+    const secondsInMilliseconds = this.state.seconds * 1000;
+    const timeInMilliseconds = minutesInMilliseconds + secondsInMilliseconds;
 
     this.props.onChange!(timeInMilliseconds);
   }
@@ -71,7 +71,7 @@ class TimeInput extends Component<TimeInputProps, TimeInputState> {
           id="minutes-field"
           label="Minutes"
           type="number"
-          disabled={!this.props.enabled}
+          disabled={!this.props.inputEnabled}
           InputProps={{inputProps: { min:0 }}}
           value={this.state.minutes}
           onChange={this.handleMinutesChange}
@@ -81,7 +81,7 @@ class TimeInput extends Component<TimeInputProps, TimeInputState> {
           id="seconds-field"
           label="Seconds"
           type="number"
-          disabled={!this.props.enabled}
+          disabled={!this.props.inputEnabled}
           InputProps={{inputProps: { min:0 }}}
           value={this.state.seconds}
           onChange={this.handleSecondsChange}
