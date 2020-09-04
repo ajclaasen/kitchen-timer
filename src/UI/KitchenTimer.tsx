@@ -2,57 +2,37 @@ import React, { Component } from 'react';
 
 import { TextField } from '@material-ui/core';
 
+import Timer from '../time/Timer';
+import TimeInput from './TimeInput';
 import PlayPauseButton from './PlayPauseButton';
 import StopButton from './StopButton';
 
-import { minutesAndSecondsToTime } from '../timeHelpers';
+import { minutesAndSecondsToTime } from '../time/timeHelpers';
 
-interface Time {
-  time?: number;
-  minutes?: number;
-  seconds?: number;
+interface KitchenTimerProps {
+  duration?: number;
   playing?: boolean;
 }
 
-class KitchenTimer extends Component<{}, Time>  {
-  constructor(props:Time) {
+interface KitchenTimerState {
+  duration?: number;
+  playing?: boolean;
+}
+
+class KitchenTimer extends Component<KitchenTimerProps, KitchenTimerState>  {
+
+  constructor(props:KitchenTimerProps) {
     super(props);
 
     this.state = {
-      time: props.time,
-      minutes: props.minutes,
-      seconds: props.seconds,
+      duration: props.duration,
       playing: props.playing,
     };
   }
 
   static defaultProps = {
-    time: 0,
-    minutes: 0,
-    seconds: 0,
+    duration: 0,
     playing: false,
-  };
-
-  handleMinutes = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const minutes = Number(event.currentTarget.value);
-    const seconds = this.state.seconds!;
-    const time = minutesAndSecondsToTime(minutes, seconds);
-
-    this.setState({
-      minutes: minutes,
-      time: time,
-    });
-  };
-
-  handleSeconds = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const minutes = this.state.minutes!;
-    const seconds = Number(event.currentTarget.value);
-    const time = minutesAndSecondsToTime(minutes, seconds);
-
-    this.setState({
-      seconds: seconds,
-      time: time,
-    });
   };
 
   togglePlaying = () => {
@@ -61,33 +41,17 @@ class KitchenTimer extends Component<{}, Time>  {
     });
   };
 
+  onInputChange = (milliseconds:number) => {
+    console.log(milliseconds);
+  }
+
   render() {
     return (
-      <form autoComplete="off">
-
-        <TextField
-          id="minutes-field"
-          label="Minutes"
-          type="number"
-          disabled={this.state.playing}
-          InputProps={{inputProps: {min:0}}}
-          onChange={this.handleMinutes}
-        />
-
-        <TextField
-          id="seconds-field"
-          label="Seconds"
-          type="number"
-          InputProps={{inputProps: {min:0}}}
-          disabled={this.state.playing}
-          onChange={this.handleSeconds}
-        />
-
+      <div>
+        <TimeInput enabled={!this.state.playing} onChange={this.onInputChange} />
         <PlayPauseButton playing={this.state.playing} onClick={this.togglePlaying} />
         <StopButton />
-        {this.state.time}
-
-      </form>
+      </div>
     );
   };
 };
