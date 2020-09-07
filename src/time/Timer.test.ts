@@ -14,13 +14,16 @@ const advanceTime = (milliseconds:number) => {
 
 const setup = (duration: number) => {
   const onTimeout = jest.fn();
+  const onSecond = jest.fn();
   const timer = new Timer({
     duration: duration,
+    onSecond: onSecond,
     onTimeout: onTimeout,
   });
 
   return {
     timer,
+    onSecond,
     onTimeout,
   }
 };
@@ -46,11 +49,11 @@ describe('when the timer has 1000 ms duration', () => {
   describe('onTimeout', () => {
     it('is called after 1 second', () => {
       timer.start();
-    
+
       advanceTime(1000);
 
       expect(onTimeout).toBeCalled();
-      });
+    });
 
     it('is not called when the timer is paused after it is started', () => {
       timer.start();
@@ -142,6 +145,64 @@ describe('when the timer has 1000 ms duration', () => {
       advanceTime(100);
 
       expect(timer.timeLeft).toEqual(150);
+    });
+  });
+});
+
+describe('when the timer has 10000 ms duration', () => {
+  let timer: Timer;
+  let onSecond: jest.Mock;
+  beforeEach(() => {
+    ({ timer, onSecond } = setup(10000));
+  })
+
+
+  describe('onSecond', () => {
+    it('is not called right away', () => {
+      timer.start();
+      advanceTime(10);
+
+      expect(onSecond).not.toBeCalled();
+    });
+
+    it('is called after the first second', () => {
+      timer.start();
+      advanceTime(1000);
+
+      expect(onSecond).toBeCalled();
+    });
+
+    it('has been called twice after the second second', () => {
+      timer.start();
+      advanceTime(2000);
+
+      expect(onSecond).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not get called after the timer has elapsed', () => {
+      timer.start();
+      advanceTime(10000);
+
+      onSecond.mockClear();
+
+      advanceTime(10000);
+
+      expect(onSecond).not.toBeCalled();
+    });
+
+    it('does not get called unless a full second has elapsed while the timer was unpaused', () => {
+      timer.start();
+      advanceTime(500);
+      timer.pause();
+      advanceTime(500);
+      timer.start();
+      advanceTime(499);
+
+      expect(onSecond).not.toBeCalled();
+
+      advanceTime(1);
+
+      expect(onSecond).toBeCalled();
     });
   });
 });
