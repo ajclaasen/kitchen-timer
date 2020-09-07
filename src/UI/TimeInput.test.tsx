@@ -1,11 +1,16 @@
 import React from 'react';
 
 import TimeInput from './TimeInput';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, RenderResult } from '@testing-library/react';
 
-const setup = () => {
+const setup = (startingTime?: number) => {
   const callback = jest.fn((x:number) => {});
-  const utils = render(<TimeInput onChange={callback} />)
+  let utils: RenderResult;
+  if(startingTime) {
+    utils = render(<TimeInput startingTime={startingTime} onChange={callback} />)
+  } else {
+    utils = render(<TimeInput onChange={callback} />)
+  }
   const minutesInput = utils.getByLabelText('Minutes');
   const secondsInput = utils.getByLabelText('Seconds');
 
@@ -15,7 +20,7 @@ const setup = () => {
     secondsInput,
     ...utils,
   };
-}
+};
 
 it('calls the passed onChange handler when the minutes are updated', () => {
   const { callback, minutesInput } = setup();
@@ -45,59 +50,21 @@ it('calls the passed onChange handler with the correct amount of milliseconds', 
   expect(callback).toBeCalledWith(123000);
 });
 
-it('shows the minutes and seconds if a duration is passed', () => {
-  const duration = 126000; // 2 minutes and 6 seconds
-  const { getByLabelText } = render(<TimeInput duration={duration} />);
+it('shows the amount of minutes and seconds if a starting time is passed', () => {
+  const { minutesInput, secondsInput } = setup(126000);;
 
-  expect(getByLabelText('Minutes')).toHaveDisplayValue('2');
-  expect(getByLabelText('Seconds')).toHaveDisplayValue('6');
+  expect(minutesInput).toHaveDisplayValue('2');
+  expect(secondsInput).toHaveDisplayValue('6');
 });
 
-describe('if a timeLeft and inputEnabled=false is passed', () => {
-  it('does not show the minutes and seconds of the passed duration', () => {
-    const duration = 126000;
+it('rounds the amount of minutes up if almost a minute is passed', () => {
+  const { minutesInput } = setup(59999);
 
-    const { getByLabelText } = render(<TimeInput inputEnabled={false} duration={duration} timeLeft={0} />);
+  expect(minutesInput).toHaveDisplayValue('1');
+});
 
-    expect(getByLabelText('Minutes')).not.toHaveDisplayValue('2');
-    expect(getByLabelText('Seconds')).not.toHaveDisplayValue('6');
-  });
+it('rounds the amount of seconds up', () => {
+  const { secondsInput } = setup(500);
 
-  it('shows the amount of time passed to it, if its input is disabled', () => {
-    const duration = 126000
-    const timeLeft = 63000;
-    const { getByLabelText } = render(<TimeInput inputEnabled={false} duration={duration} timeLeft={timeLeft} />);
-  
-    expect(getByLabelText('Minutes')).toHaveDisplayValue('1');
-    expect(getByLabelText('Seconds')).toHaveDisplayValue('3');
-  });
-
-  it('substracts the time in minutes from the amount of seconds if seconds > 60', () => {
-    const timeLeft = 61000;
-    const { getByLabelText } = render(<TimeInput inputEnabled={false} timeLeft={timeLeft} />);
-
-    expect(getByLabelText('Seconds')).not.toHaveDisplayValue('61');
-  });
-
-  describe('when timeLeft=59999 is passed', () => {
-    const timeLeft = 59999;
-    
-    it('shows 1 minute', () => {
-      const { getByLabelText } = render(<TimeInput inputEnabled={false} timeLeft={timeLeft} />);
-
-      expect(getByLabelText('Minutes')).toHaveDisplayValue('1');
-    });
-
-    it('does not show 60 seconds', () => {
-      const { getByLabelText } = render(<TimeInput inputEnabled={false} timeLeft={timeLeft} />);
-
-      expect(getByLabelText('Seconds')).not.toHaveDisplayValue('60');
-    });
-
-    it('shows 0 seconds', () => {
-      const { getByLabelText } = render(<TimeInput inputEnabled={false} timeLeft={timeLeft} />);
-
-      expect(getByLabelText('Seconds')).toHaveDisplayValue('0');
-    })
-  });
+  expect(secondsInput).toHaveDisplayValue('1');
 });
