@@ -43,7 +43,8 @@ describe('when the timer has 1000 ms duration', () => {
     ({ timer, onTimeout } = setup(1000));
   })
 
-  it('with a 1000 ms duration, the onTimeout is called after 1 second', () => {
+  describe('onTimeout', () => {
+    it('is called after 1 second', () => {
     timer.start();
   
     advanceTime(1000);
@@ -51,7 +52,7 @@ describe('when the timer has 1000 ms duration', () => {
     expect(onTimeout).toBeCalled();
   });
 
-  it('when the timer is paused after it is started, the onTimeout is not called', () => {
+    it('is not called when the timer is paused after it is started', () => {
     timer.start();
     timer.pause();
   
@@ -60,7 +61,7 @@ describe('when the timer has 1000 ms duration', () => {
     expect(onTimeout).not.toBeCalled();
   });
 
-  it('when the timer is reset after it is started, the onTimeout is not called', () => {
+    it('is not called when the timer is reset after it is started', () => {
     timer.start();
     advanceTime(500);
     timer.reset();
@@ -70,7 +71,7 @@ describe('when the timer has 1000 ms duration', () => {
     expect(onTimeout).not.toBeCalled();
   });
 
-  it('when the timer is continued after paused, the onTimeout is called after the right amount of time', () => {
+    it('is called after the right amount of time and not before when the timer is continued after paused', () => {
     timer.start();
     advanceTime(500);
     timer.pause();
@@ -88,7 +89,7 @@ describe('when the timer has 1000 ms duration', () => {
     expect(onTimeout).toBeCalled();
   });
 
-  it('onTimeout is called after setTime is called, regardless of earlier timeElapsed', () => {
+    it('is called after the amount of time specified by setTimeLeft, and not before', () => {
     timer.start();
     advanceTime(500);
     timer.setTimeLeft(750);
@@ -100,12 +101,14 @@ describe('when the timer has 1000 ms duration', () => {
   
     expect(onTimeout).toBeCalled();
   });
+  });
 
-  it('timeLeft returns the duration of the timer after initialization', () => {
+  describe('timeLeft', () => {
+    it('returns the duration of the timer after initialization', () => {
     expect(timer.timeLeft).toEqual(1000);
   });
 
-  it('timeLeft returns the correct time during and after a pause', () => {
+    it('returns the correct time during and after a pause', () => {
     timer.start();
     timer.pause();
     advanceTime(250);
@@ -122,7 +125,7 @@ describe('when the timer has 1000 ms duration', () => {
     expect(timer.timeLeft).toEqual(750);
   });
 
-  it('timeLeft returns the correct time after multiple pauses', () => {
+    it('returns the correct time after multiple pauses', () => {
     timer.start();
     advanceTime(250);
     timer.pause();
@@ -140,4 +143,5 @@ describe('when the timer has 1000 ms duration', () => {
   
     expect(timer.timeLeft).toEqual(150);
   });
+});
 });
