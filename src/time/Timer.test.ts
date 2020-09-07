@@ -12,6 +12,19 @@ const advanceTime = (milliseconds:number) => {
   setTime(Date.now() + milliseconds);
 };
 
+const setup = (duration: number) => {
+  const onTimeout = jest.fn();
+  const timer = new Timer({
+      duration: duration,
+      onTimeout: onTimeout,
+  });
+
+  return {
+    timer,
+    onTimeout,
+  }
+};
+
 beforeAll(() => {
   setTime(new Date(Date.now()).getTime());
   jest.useFakeTimers();
@@ -23,167 +36,108 @@ afterAll(() => {
 
 
 
-it('with a 1000 ms duration, the callback is called after 1 second', () => {
-  const callback = jest.fn();
+describe('when the timer has 1000 ms duration', () => {
+  let timer: Timer;
+  let onTimeout: jest.Mock;
+  beforeEach(() => {
+    ({ timer, onTimeout } = setup(1000));
+  })
 
-  const timer = new Timer({
-    duration: 1000,
-    callback: callback,
+  it('with a 1000 ms duration, the onTimeout is called after 1 second', () => {
+    timer.start();
+  
+    advanceTime(1000);
+  
+    expect(onTimeout).toBeCalled();
   });
 
-  timer.start();
-
-  advanceTime(1000);
-
-  expect(callback).toBeCalled();
-});
-
-
-
-it('when the timer is paused after it is started, the callback is not called', () => {
-  const callback = jest.fn();
-
-  const timer = new Timer({
-    duration: 500,
-    callback: callback,
+  it('when the timer is paused after it is started, the onTimeout is not called', () => {
+    timer.start();
+    timer.pause();
+  
+    advanceTime(1000);
+  
+    expect(onTimeout).not.toBeCalled();
   });
 
-  timer.start();
-  timer.pause();
-
-  advanceTime(1000);
-
-  expect(callback).not.toBeCalled();
-});
-
-
-
-it('when the timer is reset after it is started, the callback is not called', () => {
-  const callback = jest.fn();
-
-  const timer = new Timer({
-    duration: 750,
-    callback: callback,
+  it('when the timer is reset after it is started, the onTimeout is not called', () => {
+    timer.start();
+    advanceTime(500);
+    timer.reset();
+  
+    advanceTime(1000);
+  
+    expect(onTimeout).not.toBeCalled();
   });
 
-  timer.start();
-  advanceTime(500);
-  timer.reset();
-
-  advanceTime(1000);
-
-  expect(callback).not.toBeCalled();
-});
-
-
-
-it('when the timer is continued after paused, the callback is called after the right amount of time', () => {
-  const callback = jest.fn();
-
-  const timer = new Timer({
-    duration: 1000,
-    callback: callback,
+  it('when the timer is continued after paused, the onTimeout is called after the right amount of time', () => {
+    timer.start();
+    advanceTime(500);
+    timer.pause();
+    advanceTime(1000);
+  
+    expect(onTimeout).not.toBeCalled();
+  
+    timer.start();
+    advanceTime(1);
+  
+    expect(onTimeout).not.toBeCalled();
+  
+    advanceTime(500);
+  
+    expect(onTimeout).toBeCalled();
   });
 
-  timer.start();
-  advanceTime(500);
-  timer.pause();
-  advanceTime(1000);
-
-  expect(callback).not.toBeCalled();
-
-  timer.start();
-  advanceTime(1);
-
-  expect(callback).not.toBeCalled();
-
-  advanceTime(500);
-
-  expect(callback).toBeCalled();
-});
-
-
-
-it('callback is called after setTime is called, regardless of earlier timeElapsed', () => {
-  const callback = jest.fn();
-
-  const timer = new Timer({
-    duration: 1000,
-    callback: callback,
+  it('onTimeout is called after setTime is called, regardless of earlier timeElapsed', () => {
+    timer.start();
+    advanceTime(500);
+    timer.setTimeLeft(750);
+    advanceTime(500);
+  
+    expect(onTimeout).not.toBeCalled();
+  
+    advanceTime(250);
+  
+    expect(onTimeout).toBeCalled();
   });
 
-  timer.start();
-  advanceTime(500);
-  timer.setTimeLeft(750);
-  advanceTime(500);
-
-  expect(callback).not.toBeCalled();
-
-  advanceTime(250);
-
-  expect(callback).toBeCalled();
-});
-
-
-
-it('timeLeft returns the duration of the timer after initialization', () => {
-  const duration = 1234;
-  const timer = new Timer({
-    duration: duration, 
-    callback: () => {},
+  it('timeLeft returns the duration of the timer after initialization', () => {
+    expect(timer.timeLeft).toEqual(1000);
   });
 
-  expect(timer.timeLeft).toEqual(duration);
-});
-
-
-
-it('timeLeft returns the correct time during and after a pause', () => {
-  const duration = 1000;
-  const timer = new Timer({
-    duration: duration,
-    callback: () => {},
+  it('timeLeft returns the correct time during and after a pause', () => {
+    timer.start();
+    timer.pause();
+    advanceTime(250);
+  
+    expect(timer.timeLeft).toEqual(1000);
+  
+    advanceTime(500);
+  
+    expect(timer.timeLeft).toEqual(1000);
+  
+    timer.start();
+    advanceTime(250);
+  
+    expect(timer.timeLeft).toEqual(750);
   });
 
-  timer.start();
-  timer.pause();
-  advanceTime(250);
-
-  expect(timer.timeLeft).toEqual(duration);
-
-  advanceTime(500);
-
-  expect(timer.timeLeft).toEqual(duration);
-
-  timer.start();
-  advanceTime(250);
-
-  expect(timer.timeLeft).toEqual(duration - 250);
-});
-
-
-
-it('timeLeft returns the correct time after multiple pauses', () => {
-  const duration = 1000;
-  const timer = new Timer({
-    duration: duration,
-    callback: () => {},
+  it('timeLeft returns the correct time after multiple pauses', () => {
+    timer.start();
+    advanceTime(250);
+    timer.pause();
+  
+    expect(timer.timeLeft).toEqual(750);
+  
+    timer.start();
+    advanceTime(500);
+    timer.pause();
+  
+    expect(timer.timeLeft).toEqual(250);
+  
+    timer.start();
+    advanceTime(100);
+  
+    expect(timer.timeLeft).toEqual(150);
   });
-
-  timer.start();
-  advanceTime(250);
-  timer.pause();
-
-  expect(timer.timeLeft).toEqual(750);
-
-  timer.start();
-  advanceTime(500);
-  timer.pause();
-
-  expect(timer.timeLeft).toEqual(250);
-
-  timer.start();
-  advanceTime(100);
-
-  expect(timer.timeLeft).toEqual(150);
 });
