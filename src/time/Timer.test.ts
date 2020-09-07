@@ -15,8 +15,8 @@ const advanceTime = (milliseconds:number) => {
 const setup = (duration: number) => {
   const onTimeout = jest.fn();
   const timer = new Timer({
-      duration: duration,
-      onTimeout: onTimeout,
+    duration: duration,
+    onTimeout: onTimeout,
   });
 
   return {
@@ -48,16 +48,16 @@ describe('when the timer has 1000 ms duration', () => {
       timer.start();
     
       advanceTime(1000);
-    
+
       expect(onTimeout).toBeCalled();
       });
 
     it('is not called when the timer is paused after it is started', () => {
       timer.start();
       timer.pause();
-    
+
       advanceTime(1000);
-    
+
       expect(onTimeout).not.toBeCalled();
     });
 
@@ -65,9 +65,9 @@ describe('when the timer has 1000 ms duration', () => {
       timer.start();
       advanceTime(500);
       timer.reset();
-    
+
       advanceTime(1000);
-    
+
       expect(onTimeout).not.toBeCalled();
     });
 
@@ -76,16 +76,16 @@ describe('when the timer has 1000 ms duration', () => {
       advanceTime(500);
       timer.pause();
       advanceTime(1000);
-    
+
       expect(onTimeout).not.toBeCalled();
-    
+
       timer.start();
       advanceTime(1);
-    
+
       expect(onTimeout).not.toBeCalled();
-    
+
       advanceTime(500);
-    
+
       expect(onTimeout).toBeCalled();
     });
 
@@ -94,53 +94,53 @@ describe('when the timer has 1000 ms duration', () => {
       advanceTime(500);
       timer.setTimeLeft(750);
       advanceTime(500);
-    
+
       expect(onTimeout).not.toBeCalled();
-    
+
       advanceTime(250);
-    
+
       expect(onTimeout).toBeCalled();
     });
   });
-  
+
   describe('timeLeft', () => {
     it('returns the duration of the timer after initialization', () => {
       expect(timer.timeLeft).toEqual(1000);
     });
-  
+
     it('returns the correct time during and after a pause', () => {
       timer.start();
       timer.pause();
       advanceTime(250);
-    
+
       expect(timer.timeLeft).toEqual(1000);
-    
+
       advanceTime(500);
-    
+
       expect(timer.timeLeft).toEqual(1000);
-    
+
       timer.start();
       advanceTime(250);
-    
+
       expect(timer.timeLeft).toEqual(750);
     });
-  
+
     it('returns the correct time after multiple pauses', () => {
       timer.start();
       advanceTime(250);
       timer.pause();
-    
+
       expect(timer.timeLeft).toEqual(750);
-    
+
       timer.start();
       advanceTime(500);
       timer.pause();
-    
+
       expect(timer.timeLeft).toEqual(250);
-    
+
       timer.start();
       advanceTime(100);
-    
+
       expect(timer.timeLeft).toEqual(150);
     });
   });
