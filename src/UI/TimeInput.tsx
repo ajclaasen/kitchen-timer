@@ -48,19 +48,44 @@ class TimeInput extends Component<TimeInputProps, TimeInputState> {
     if(this.props.inputEnabled) {
       return this.state.minutes;
     } else {
-      return millisecondsToAbsMinutes(this.props.timeLeft!);
+      return this.minutesOnTimer(this.props.timeLeft!);
     }
+  }
+
+  minutesOnTimer = (milliseconds: number) => {
+    // As we are rounding up seconds, we should round up a minute during the 
+    // last second of a minute
+    let minutes = millisecondsToAbsMinutes(this.props.timeLeft!)
+    const withoutMinutes = milliseconds % 60000;
+    if(withoutMinutes > 59000) {
+      minutes++;
+    }
+    return minutes;
   }
 
   displayedSeconds = () => {
     if(this.props.inputEnabled) {
       return this.state.seconds;
     } else {
-      // Because we do not show any time units smaller than a second, it is
-      // more intuitive round up than to round down.
-      return millisecondsToAbsSeconds(this.props.timeLeft! + 1);
+      return this.secondsOnTimer(this.props.timeLeft!);
     }
   }
+
+  secondsOnTimer = (milliseconds: number) => {
+    const withoutMinutes = milliseconds % 60000;
+
+    // We do not show any time units smaller than a second, so it is more
+    // intuitive to round up than to round down, so we +1 the rounded down value.
+    let seconds = millisecondsToAbsSeconds(withoutMinutes);
+    if(withoutMinutes % 1000 > 0) {
+      seconds++;
+    }
+    // But 60 seconds should be displayed as a minute.
+    if(seconds == 60) {
+      return 0;
+    }
+    return seconds;
+  } 
 
   handleMinutesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({minutes: Number(event.currentTarget.value)}, 

@@ -64,10 +64,40 @@ describe('if a timeLeft and inputEnabled=false is passed', () => {
   });
 
   it('shows the amount of time passed to it, if its input is disabled', () => {
+    const duration = 126000
     const timeLeft = 63000;
-    const { getByLabelText } = render(<TimeInput inputEnabled={false} timeLeft={timeLeft} />);
+    const { getByLabelText } = render(<TimeInput inputEnabled={false} duration={duration} timeLeft={timeLeft} />);
   
     expect(getByLabelText('Minutes')).toHaveDisplayValue('1');
     expect(getByLabelText('Seconds')).toHaveDisplayValue('3');
+  });
+
+  it('substracts the time in minutes from the amount of seconds if seconds > 60', () => {
+    const timeLeft = 61000;
+    const { getByLabelText } = render(<TimeInput inputEnabled={false} timeLeft={timeLeft} />);
+
+    expect(getByLabelText('Seconds')).not.toHaveDisplayValue('61');
+  });
+
+  describe('when timeLeft=59999 is passed', () => {
+    const timeLeft = 59999;
+    
+    it('shows 1 minute', () => {
+      const { getByLabelText } = render(<TimeInput inputEnabled={false} timeLeft={timeLeft} />);
+
+      expect(getByLabelText('Minutes')).toHaveDisplayValue('1');
+    });
+
+    it('does not show 60 seconds', () => {
+      const { getByLabelText } = render(<TimeInput inputEnabled={false} timeLeft={timeLeft} />);
+
+      expect(getByLabelText('Seconds')).not.toHaveDisplayValue('60');
+    });
+
+    it('shows 0 seconds', () => {
+      const { getByLabelText } = render(<TimeInput inputEnabled={false} timeLeft={timeLeft} />);
+
+      expect(getByLabelText('Seconds')).toHaveDisplayValue('0');
+    })
   });
 });
