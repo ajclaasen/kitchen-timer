@@ -5,6 +5,7 @@ import { TextField } from '@material-ui/core';
 import { millisecondsToAbsMinutes, millisecondsToAbsSeconds } from '../time/timeHelpers';
 
 interface TimeInputProps {
+  timeLeft?: number,
   onChange?: (arg0:number) => void,
   inputEnabled?: boolean,
   duration?: number,
@@ -43,6 +44,24 @@ class TimeInput extends Component<TimeInputProps, TimeInputState> {
     };
   };
 
+  displayedMinutes = () => {
+    if(this.props.inputEnabled) {
+      return this.state.minutes;
+    } else {
+      return millisecondsToAbsMinutes(this.props.timeLeft!);
+    }
+  }
+
+  displayedSeconds = () => {
+    if(this.props.inputEnabled) {
+      return this.state.seconds;
+    } else {
+      // Because we do not show any time units smaller than a second, it is
+      // more intuitive round up than to round down.
+      return millisecondsToAbsSeconds(this.props.timeLeft! + 1);
+    }
+  }
+
   handleMinutesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({minutes: Number(event.currentTarget.value)}, 
       this.onChange
@@ -73,7 +92,7 @@ class TimeInput extends Component<TimeInputProps, TimeInputState> {
           type="number"
           disabled={!this.props.inputEnabled}
           InputProps={{inputProps: { min:0 }}}
-          value={this.state.minutes}
+          value={this.displayedMinutes()}
           onChange={this.handleMinutesChange}
         />
 
@@ -83,7 +102,7 @@ class TimeInput extends Component<TimeInputProps, TimeInputState> {
           type="number"
           disabled={!this.props.inputEnabled}
           InputProps={{inputProps: { min:0 }}}
-          value={this.state.seconds}
+          value={this.displayedSeconds()}
           onChange={this.handleSecondsChange}
         />
 

@@ -45,10 +45,29 @@ it('calls the passed onChange handler with the correct amount of milliseconds', 
   expect(callback).toBeCalledWith(123000);
 });
 
-it('sets the minutes and seconds if a duration is passed', () => {
+it('shows the minutes and seconds if a duration is passed', () => {
   const duration = 126000; // 2 minutes and 6 seconds
   const { getByLabelText } = render(<TimeInput duration={duration} />);
 
   expect(getByLabelText('Minutes')).toHaveDisplayValue('2');
   expect(getByLabelText('Seconds')).toHaveDisplayValue('6');
+});
+
+describe('if a timeLeft and inputEnabled=false is passed', () => {
+  it('does not show the minutes and seconds of the passed duration', () => {
+    const duration = 126000;
+
+    const { getByLabelText } = render(<TimeInput inputEnabled={false} duration={duration} timeLeft={0} />);
+
+    expect(getByLabelText('Minutes')).not.toHaveDisplayValue('2');
+    expect(getByLabelText('Seconds')).not.toHaveDisplayValue('6');
+  });
+
+  it('shows the amount of time passed to it, if its input is disabled', () => {
+    const timeLeft = 63000;
+    const { getByLabelText } = render(<TimeInput inputEnabled={false} timeLeft={timeLeft} />);
+  
+    expect(getByLabelText('Minutes')).toHaveDisplayValue('1');
+    expect(getByLabelText('Seconds')).toHaveDisplayValue('3');
+  });
 });
