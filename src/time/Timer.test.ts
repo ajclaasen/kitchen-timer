@@ -35,6 +35,11 @@ beforeAll(() => {
 
 afterAll(() => {
   global.Date.now = realDateNow;
+  jest.useRealTimers();
+});
+
+afterEach(() => {
+  jest.clearAllTimers();
 });
 
 
