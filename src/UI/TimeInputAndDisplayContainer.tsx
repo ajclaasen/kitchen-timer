@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import TimeInput from './TimeInput';
 import TimeDisplay from './TimeDisplay';

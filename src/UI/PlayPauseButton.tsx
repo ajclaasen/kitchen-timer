@@ -16,7 +16,7 @@ const PlayPauseButton = ({playing=false, onClick}:PlayingAndOnClickButton) => {
   const icon = playing ? <PauseIcon /> : <PlayArrowIcon />;
 
   return (
-    <IconButton aria-label={ariaLabel} className='play-pause-button' onClick={onClick}>
+    <IconButton aria-label={ariaLabel} onClick={onClick}>
       {icon}
     </IconButton>
   )

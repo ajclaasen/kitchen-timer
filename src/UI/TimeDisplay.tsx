@@ -11,21 +11,24 @@ interface TimeDisplayProps {
 function TimeDisplay(props: TimeDisplayProps) {
   return (
     <form>
-      <TextField
-        id="minutes-field"
-        label="Minutes"
-        type="number"
-        disabled={true}
-        value={minutesOnClock(props.timeToDisplay)}
-      />
-
-      <TextField
-        id="seconds-field"
-        label="Seconds"
-        type="number"
-        disabled={true}
-        value={secondsOnClock(props.timeToDisplay)}
-      />
+      <span className="kitchen-timer-time-field">
+        <TextField
+          id="minutes-field"
+          label="Minutes"
+          type="number"
+          disabled={true}
+          value={minutesOnClock(props.timeToDisplay)}
+        />
+      </span>
+      <span className="kitchen-timer-time-field">
+        <TextField
+          id="seconds-field"
+          label="Seconds"
+          type="number"
+          disabled={true}
+          value={secondsOnClock(props.timeToDisplay)}
+        />
+      </span>
     </form>
   );
 }

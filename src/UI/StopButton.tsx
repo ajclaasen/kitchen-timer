@@ -10,7 +10,7 @@ interface OnClickButton {
 
 const StopButton = ({onClick}:OnClickButton) => {
   return (
-    <IconButton aria-label='stop' className='stop-button' onClick={onClick}>
+    <IconButton aria-label='stop' onClick={onClick}>
       <StopIcon />
     </IconButton>
   )

@@ -92,17 +92,21 @@ class KitchenTimer extends Component<KitchenTimerProps, KitchenTimerState>  {
 
   render() {
     return (
-      <div>
-        <TimeInputAndDisplayContainer
-          timeToDisplay={this.state.timeToDisplay}
-          allowInput={!this.state.playing}
-          onTimeInputChange={this.onInputChange}
-        />
-        <PlayPauseButton
-          playing={this.state.playing}
-          onClick={this.togglePlaying}
-        />
-        <StopButton onClick={this.reset} />
+      <div className="kitchen-timer">
+        <div className="kitchen-timer-input-container">
+          <TimeInputAndDisplayContainer 
+            timeToDisplay={this.state.timeToDisplay}
+            allowInput={!this.state.playing}
+            onTimeInputChange={this.onInputChange}
+          />
+        </div>
+        <div className="kitchen-timer-controls">
+          <PlayPauseButton
+            playing={this.state.playing}
+            onClick={this.togglePlaying}
+          />
+          <StopButton onClick={this.reset} />
+        </div>
       </div>
     );
   };

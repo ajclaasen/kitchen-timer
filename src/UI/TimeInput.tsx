@@ -83,25 +83,26 @@ class TimeInput extends Component<TimeInputProps, TimeInputState> {
     
     return (
       <form autoComplete="off">
-
-        <TextField
-          id="minutes-field"
-          label="Minutes"
-          type="number"
-          InputProps={{inputProps: { min:0 }}}
-          value={this.state.minutes}
-          onChange={this.handleMinutesChange}
-        />
-
-        <TextField
-          id="seconds-field"
-          label="Seconds"
-          type="number"
-          InputProps={{inputProps: { min:0 }}}
-          value={this.state.seconds}
-          onChange={this.handleSecondsChange}
-        />
-
+        <span className="kitchen-timer-time-field">
+          <TextField
+            id="minutes-field"
+            label="Minutes"
+            type="number"
+            InputProps={{inputProps: { min:0 }}}
+            value={this.state.minutes}
+            onChange={this.handleMinutesChange}
+          />
+        </span>
+        <span className="kitchen-timer-time-field">
+          <TextField
+            id="seconds-field"
+            label="Seconds"
+            type="number"
+            InputProps={{inputProps: { min:0 }}}
+            value={this.state.seconds}
+            onChange={this.handleSecondsChange}
+          />
+        </span>
       </form>
     )
   }
