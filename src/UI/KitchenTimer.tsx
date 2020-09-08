@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
 
-import { TextField } from '@material-ui/core';
-
 import Timer from '../time/Timer';
-import TimeInput from './TimeInput';
 import PlayPauseButton from './PlayPauseButton';
 import StopButton from './StopButton';
 
-import { minutesAndSecondsToTime } from '../time/timeHelpers';
+import TimeInputAndDisplayContainer from './TimeInputAndDisplayContainer';
 
 interface KitchenTimerProps {
   duration?: number,
@@ -15,9 +12,10 @@ interface KitchenTimerProps {
 }
 
 interface KitchenTimerState {
-  playing?: boolean;
-  timerHasStarted: boolean;
-  timer: Timer;
+  playing: boolean,
+  timerHasStarted: boolean,
+  timer: Timer,
+  timeToDisplay: number,
 }
 
 class KitchenTimer extends Component<KitchenTimerProps, KitchenTimerState>  {
@@ -26,9 +24,13 @@ class KitchenTimer extends Component<KitchenTimerProps, KitchenTimerState>  {
     super(props);
 
     this.state = {
-      playing: props.playing,
+      playing: props.playing || KitchenTimer.defaultProps.playing,
       timerHasStarted: false,
-      timer: new Timer({duration: props.duration!, onTimeout: this.alarm}),
+      timer: new Timer({
+        duration: props.duration || KitchenTimer.defaultProps.duration, 
+        onSecond: this.onEverySecond,
+        onTimeout: this.alarm}),
+      timeToDisplay: props.duration || KitchenTimer.defaultProps.duration,
     };
   }
 
@@ -57,22 +59,20 @@ class KitchenTimer extends Component<KitchenTimerProps, KitchenTimerState>  {
     this.setState({
       playing: false,
     });
-    
-    console.log(`Alarm paused with ${this.state.timer.timeLeft} milliseconds left.`);
   }
 
   reset = () => {
+    this.state.timer.reset();
     this.setState({
       playing: false,
       timerHasStarted: false,
+      timeToDisplay: this.state.timer.duration,
     });
-    this.state.timer.reset();
   }
 
   alarm = () => {
     this.reset();
 
-    console.log(`Alarm called after ${this.state.timer.duration} milliseconds.`);
     window.alert("ALARM");
   }
 
@@ -82,14 +82,27 @@ class KitchenTimer extends Component<KitchenTimerProps, KitchenTimerState>  {
     } else {
       this.state.timer.duration = milliseconds;
     }
+    
+    this.setState({timeToDisplay: milliseconds});
+  }
+
+  onEverySecond = () => {
+    this.setState({timeToDisplay: this.state.timer.timeLeft});
   }
 
   render() {
     return (
       <div>
-        <TimeInput inputEnabled={!this.state.playing} onChange={this.onInputChange} />
-        <PlayPauseButton playing={this.state.playing} onClick={this.togglePlaying} />
-        <StopButton onClick={this.reset}/>
+        <TimeInputAndDisplayContainer
+          timeToDisplay={this.state.timeToDisplay}
+          allowInput={!this.state.playing}
+          onTimeInputChange={this.onInputChange}
+        />
+        <PlayPauseButton
+          playing={this.state.playing}
+          onClick={this.togglePlaying}
+        />
+        <StopButton onClick={this.reset} />
       </div>
     );
   };

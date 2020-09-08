@@ -40,6 +40,19 @@ class TimeInput extends Component<TimeInputProps, TimeInputState> {
     };
   };
 
+  updateMinutesAndSeconds = (milliseconds:number) => {
+    this.setState({
+      minutes: minutesOnClock(milliseconds),
+      seconds: secondsOnClock(milliseconds),
+    });
+  }
+
+  componentWillReceiveProps(nextProps:TimeInputProps) {
+    if(nextProps.startingTime && nextProps.startingTime !== this.currentInputsToMilliseconds()) {
+      this.updateMinutesAndSeconds(nextProps.startingTime);
+    }
+  }
+
   handleMinutesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState(
       {minutes: Number(event.currentTarget.value)}, 
@@ -55,14 +68,19 @@ class TimeInput extends Component<TimeInputProps, TimeInputState> {
   }
 
   onChange = () => {
+    this.props.onChange!(this.currentInputsToMilliseconds());
+  }
+
+  currentInputsToMilliseconds = () => {
     const minutesInMilliseconds = this.state.minutes * 60 * 1000;
     const secondsInMilliseconds = this.state.seconds * 1000;
     const timeInMilliseconds = minutesInMilliseconds + secondsInMilliseconds;
 
-    this.props.onChange!(timeInMilliseconds);
+    return timeInMilliseconds
   }
 
   render() {
+    
     return (
       <form autoComplete="off">
 

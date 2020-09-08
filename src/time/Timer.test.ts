@@ -161,6 +161,13 @@ describe('when the timer has 10000 ms duration', () => {
     ({ timer, onSecond } = setup(10000));
   })
 
+  it('has 5000 ms left after 5000 ms has passed', () => {
+    timer.start();
+    advanceTime(5000);
+
+    expect(timer.timeLeft).toBe(5000);
+  });
+
 
   describe('onSecond', () => {
     it('is not called right away', () => {
