@@ -8,8 +8,8 @@ const setTime = (milliseconds:number) => {
 };
 
 const advanceTime = (milliseconds:number) => {
-  jest.advanceTimersByTime(milliseconds);
   setTime(Date.now() + milliseconds);
+  jest.advanceTimersByTime(milliseconds);
 };
 
 const setup = (duration: number) => {
