@@ -60,7 +60,7 @@ export function secondsOnClock(milliseconds: number) {
     seconds++;
   }
   // But 60 seconds should be displayed as a minute instead.
-  if(seconds == 60) {
+  if(seconds === 60) {
     return 0;
   }
   return seconds;

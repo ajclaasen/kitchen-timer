@@ -19,25 +19,17 @@ class TimeInput extends Component<TimeInputProps, TimeInputState> {
   constructor(props:TimeInputProps) {
     super(props);
 
-    this.setMinutesAndSeconds(
-      props.startingTime || 
-      TimeInput.defaultProps.startingTime
-    );
+    const startingTime = props.startingTime || TimeInput.defaultProps.startingTime;
+
+    this.state = {
+      minutes: minutesOnClock(startingTime),
+      seconds: secondsOnClock(startingTime),
+    }
   }
 
   static defaultProps = {
     startingTime: 0,
     onChange: () => {},
-  };
-
-  setMinutesAndSeconds = (milliseconds:number) => {
-    const minutes = minutesOnClock(milliseconds)
-    const seconds = secondsOnClock(milliseconds);
-
-    this.state = {
-      minutes: minutes,
-      seconds: seconds,
-    };
   };
 
   updateMinutesAndSeconds = (milliseconds:number) => {
